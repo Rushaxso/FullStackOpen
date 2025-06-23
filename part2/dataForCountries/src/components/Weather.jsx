@@ -1,5 +1,4 @@
 const Weather = ({capital, weather}) => {
-  console.log(weather)
   const weatherInfo = weather.weather[0]
   return (
     <div>
