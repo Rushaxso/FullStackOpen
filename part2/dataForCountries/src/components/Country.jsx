@@ -1,4 +1,6 @@
-const Country = ({country}) => {
+import Weather from './Weather'
+
+const Country = ({country, weather}) => {
   const languages = Object.entries(country.languages)
   const flagStyle = {
     border: '1px solid black'
@@ -21,6 +23,7 @@ const Country = ({country}) => {
         width={200} height={"auto"}
         style={flagStyle}
       />
+      <Weather capital={country.capital} weather={weather}/>
     </div>
   )
 }
