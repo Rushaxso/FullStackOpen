@@ -1,0 +1,33 @@
+DELETE http://localhost:3001/api/persons/2
+###
+DELETE http://localhost:3001/api/persons/309523
+###
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "REST Client Test",
+  "number": "9876543210"
+}
+### fails
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "no number"
+}
+### fails
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "number": "no name (313131)"
+}
+### fails
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "9876543210"
+}
