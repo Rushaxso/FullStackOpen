@@ -1,13 +1,13 @@
 DELETE http://localhost:3001/api/persons/2
 ###
-DELETE http://localhost:3001/api/persons/309523
+DELETE http://localhost:3001/api/persons/656559
 ###
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-  "name": "REST Client Test",
-  "number": "9876543210"
+  "name": "Liisa Marttinen",
+  "number": "040-243563"
 }
 ### fails
 POST http://localhost:3001/api/persons
