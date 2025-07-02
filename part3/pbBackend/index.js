@@ -20,15 +20,20 @@ app.get('/api/persons', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   const date = new Date().toString()
-  const info = 
-    `<div>
-      Phonebook has info for ${persons.length} people<br/>
-      ${date}
-    </div>`
+  Person.find({})
+    .then(result => {
+      const amount = result.length
+      const info = 
+        `<div>
+          Phonebook has info for ${amount} people<br/>
+          ${date}
+        </div>`
+      response.send(info)  
+    })
+    .catch(error => next(error))
 
-  response.send(info)
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -62,23 +67,46 @@ app.post('/api/persons', (request, response, next) => {
   }
 
   Person.find({'name': body.name}).then(result => {
-    if(result.length() !== 0){
+    if(result.length !== 0){
       return next({
         name: 'NotUnique',
         message: 'Name must be unique'
       })
+    } else {
+      const person = new Person({
+        name: body.name,
+        number: body.number
+      })
+
+      person.save()
+        .then(savedPerson => {
+          response.json(savedPerson)
+        })
+        .catch(error => next(error))
     }
   })
+})
 
+app.put('/api/persons/:id', (request, response, next) => {
 
-  const person = new Person({
-    name: body.name,
-    number: body.number
-  })
+  const {name, number} = request.body
 
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  Person.findById(request.params.id)
+    .then(person => {
+      if(!person){
+        return response.status(404).end()
+      }
+
+      person.name = name
+      person.number = number
+
+      person.save()
+        .then(updatedPerson => {
+          response.json(updatedPerson)
+        })
+        .catch(error => next(error))
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
