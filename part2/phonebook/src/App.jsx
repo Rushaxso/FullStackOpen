@@ -83,9 +83,7 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    if( (newName === '') || (newNumber === '') ){
-      alert(`Please add a name/number to the person`)
-    } else if(persons.map(person => person.name).includes(newName)){
+    if(persons.map(person => person.name).includes(newName)){
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const oldPerson = persons.find(person => person.name === newName)
         const newPerson = {...oldPerson, number: newNumber}
