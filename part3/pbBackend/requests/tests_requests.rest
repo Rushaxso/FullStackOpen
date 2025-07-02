@@ -1,12 +1,11 @@
 DELETE http://localhost:3001/api/persons/2
 ###
-DELETE http://localhost:3001/api/persons/656559
+DELETE http://localhost:3001/api/persons/68640f0c9966bc070ddfbb5e
 ###
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-  "name": "Mongo data",
   "number": "674664646"
 }
 ### fails
