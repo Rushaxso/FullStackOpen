@@ -98,11 +98,15 @@ const App = () => {
             setNewNumber('')
             showNotification(`Updated ${newPerson.name}`, setNotification)
           })
-          .catch(() => {
-            showNotification(
+          .catch(error => {
+            if(error.response.status === 400){
+              showNotification(`${error.response.data.error}`, setError)
+            } else {
+              showNotification(
               `Information of ${newPerson.name} has already been removed from server`,
               setError
-            )
+              )
+            }
             setPersons(persons.filter(person => person.id !== newPerson.id))
           })
       }
@@ -119,11 +123,12 @@ const App = () => {
           setNewNumber('')
           showNotification(`Added ${newName}`, setNotification)
         })
-        .catch(() => {
-          showNotification(
-            `Could not add ${newName}`,
-            setError
-          )
+        .catch(error => {
+          if(error.response.status === 400){
+            showNotification(`${error.response.data.error}`, setError)
+          } else {
+            showNotification(`Could not add ${newName}`, setError)
+          }
         })
     }
   }
@@ -137,8 +142,7 @@ const App = () => {
           showNotification(`Deleted ${person.name}`, setNotification)
         })
         .catch(() => {
-          `Could not delete ${person.name}`,
-          setError
+          showNotification(`Could not delete ${person.name}`, setError)
         })
     }
   }
