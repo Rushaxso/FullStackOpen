@@ -35,6 +35,6 @@ PUT http://localhost:3001/api/persons/686563d06e86dc16f234998d
 Content-Type: application/json
 
 {
-  "name": "Updated",
+  "name": "Te",
   "number": "2342356525625"
 }
