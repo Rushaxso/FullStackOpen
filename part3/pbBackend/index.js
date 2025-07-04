@@ -115,10 +115,11 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.name, error.message)
-  if(error.name === 'CastError'){
+  const name = error.name
+  console.error(name, error.message)
+  if(name === 'CastError'){
     return response.status(400).send({error: 'Malformatted id'})
-  } else if(error.name === 'MissingInfo'){
+  } else if((name === 'MissingInfo') || (name === 'NotUnique') || (name === 'ValidationError')){
     return response.status(400).send({error: error.message})
   }
   next(error)
