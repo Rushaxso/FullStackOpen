@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
-    "test": "node --test",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development node --watch index.js",
+    "test": "cross-env NODE_ENV=test node --test",
     "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd .. && npm run build && @powershell Copy-Item dist -Recurse backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
     "lint": "eslint ."
@@ -14,6 +14,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "mongoose": "^8.16.1"
@@ -23,6 +24,7 @@
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "eslint": "^9.30.1",
     "globals": "^16.3.0",
+    "supertest": "^7.1.3",
     "typescript-eslint": "^8.35.1"
   }
 }
