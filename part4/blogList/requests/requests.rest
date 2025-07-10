@@ -7,3 +7,18 @@ Content-Type: application/json
   "url": "noURL",
   "likes": 234324324
 }
+###
+DELETE http://localhost:3003/api/blogs/
+
+###
+PUT http://localhost:3003/api/blogs/686fd0e5092a795a235a4370
+Content-Type: application/json
+
+{
+  "title": "Testing update",
+  "author": "VS Code REST",
+  "url": "noURL",
+  "likes": 234324324
+}
+
+
