@@ -8,3 +8,13 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3001/api/notes/686e85aac84heb95756f55f7
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username": "salainen",
+    "name": "REST ",
+    "password": "salainen"
+}
