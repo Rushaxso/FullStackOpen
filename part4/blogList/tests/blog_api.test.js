@@ -5,6 +5,8 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const api = supertest(app)
 
@@ -125,6 +127,81 @@ describe('updating a blog', () => {
       .put(`/api/blogs/${nonexisting}`)
       .send(updated)
       .expect(404)
+  })
+})
+
+describe("user creation", () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'testi',
+      name: 'test user',
+      password: 'salainensana',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(usernames.includes(newUser.username))
+  })
+
+  test('fails with an invalid password (length < 3)', async () => {
+    const newUser = {
+      username: 'testi',
+      name: 'test user',
+      password: '12',
+    }
+
+    const error = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+    assert(error.body.error.includes('password must be atleast 3 characters long'))
+  })
+
+  test('fails with a non unique username', async () => {
+    const newUser = {
+      username: 'root',
+      name: 'test user',
+      password: '123',
+    }
+
+    const error = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    assert(error.body.error.includes('expected `username` to be unique'))
+  })
+
+  test('fails with an invalid username (length < 3)', async () => {
+    const newUser = {
+      username: 'ro',
+      name: 'test user',
+      password: '123',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
   })
 })
 
