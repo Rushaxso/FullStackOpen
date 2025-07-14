@@ -7,12 +7,39 @@ const helper = require('./test_helper')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const api = supertest(app)
 
+const realId = '6873c65e36c7cb53e4963bc0'
+const userForToken = {
+  username: 'test user',
+  id: realId
+}
+const token = jwt.sign(userForToken, process.env.SECRET)
+const auth = 'Bearer '.concat(token)
+
 beforeEach(async () => {
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.blogs)
+
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('salasana', 10)
+  const user = new User({
+    username: userForToken.username,
+    passwordHash,
+    _id: realId,
+    blogs: []
+  })
+  await user.save()
+
+  for(let blog of helper.blogs){
+    const newBlog = new Blog(blog)
+    const savedBlog = await newBlog.save()
+    const dbUser = await User.findById(realId)
+    dbUser.blogs = dbUser.blogs.concat(savedBlog._id)
+    await dbUser.save()
+  }
 })
 
 test('blogs are returned as json', async () => {
@@ -38,6 +65,7 @@ test('a valid blog can be added', async () => {
   await api.
     post('/api/blogs')
     .send(helper.newBlog)
+    .set('Authorization', auth)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -48,6 +76,7 @@ test('a valid blog can be added', async () => {
 test('likes property defaults to 0', async () => {
   await api
     .post('/api/blogs')
+    .set('Authorization', auth)
     .send(helper.noLikes)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -79,7 +108,9 @@ describe('deletion of a blog', () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    await api.delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', auth)
+      .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
     const titles = blogsAtEnd.map(blog => blog.title)
@@ -131,15 +162,6 @@ describe('updating a blog', () => {
 })
 
 describe("user creation", () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
-  })
-
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb()
 
@@ -178,7 +200,7 @@ describe("user creation", () => {
 
   test('fails with a non unique username', async () => {
     const newUser = {
-      username: 'root',
+      username: 'test user',
       name: 'test user',
       password: '123',
     }
