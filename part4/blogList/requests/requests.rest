@@ -1,6 +1,5 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJ1c2hheHNvIiwiaWQiOiI2ODczYzY1ZTM2YzdjYjUzZTQ5NjNiYzAiLCJpYXQiOjE3NTI1MDk4NDd9.uyMcFbndDX84ntoCwLjdOPuzo2lLfELGsJU4-PLhFNI
 
 {
   "title": "To be deleted",
@@ -11,7 +10,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJ1c
 }
 ###
 DELETE http://localhost:3003/api/blogs/68752dc4f7cbadc6c2ea5fa8
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJ1c2hheHNvIiwiaWQiOiI2ODczYzY1ZTM2YzdjYjUzZTQ5NjNiYzAiLCJpYXQiOjE3NTI1MDkxODN9.IYVrKvi4WHBL3So_9PLWgA4O0tpQONJKaPkrpHqqlm0
 
 ###
 PUT http://localhost:3003/api/blogs/686fd0e5092a795a235a4370
