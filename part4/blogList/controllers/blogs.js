@@ -60,6 +60,11 @@ blogsRouter.delete('/:id', async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
+  const user = request.user
+  if(!user){
+    return response.status(400).json({ error: "userId missing or not valid" })
+  }
+
   const id = request.params.id
   const body = request.body
 

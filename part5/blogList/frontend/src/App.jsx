@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
  
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -14,10 +15,15 @@ const App = () => {
   const [notification, setNotification] = useState(null)
   const [error, setError] = useState(null)
 
+  const blogFormRef = useRef()
+
+  const refresh = async () => {
+    const blogs = await blogService.getAll()
+    blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
+    setBlogs(blogs)
+  }
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    refresh() 
   }, [])
 
   useEffect(() => {
@@ -52,14 +58,15 @@ const App = () => {
       window.localStorage.removeItem('loggedUser')
       setUser(null)
     } catch {
-      showNotification('Logginf out failed', setError)
+      showNotification('Logging out failed', setError)
     }
   }
 
   const createBlog = async (blog) => {
     try{
+      blogFormRef.current.toggleVisibility()
       const newBlog = await blogService.create(blog)
-      setBlogs(blogs.concat(newBlog))
+      refresh()
       showNotification(`A new blog ${blog.title} by ${blog.author} added`, setNotification)
     } catch {
       showNotification('Creating blog failed', setError)
@@ -78,17 +85,35 @@ const App = () => {
     )
   }
 
-  const blogForm = () => {
-    return (
-      <BlogForm createBlog={createBlog}/>
-    )
-  }
-
   const showNotification = (message, setFucntion) => {
     setFucntion(message)
     setTimeout(() => {
       setFucntion(null)
     }, 5000)
+  }
+
+  const updateBlog = async (blog) => {
+    try {
+      const updatedBlog = {...blog, likes: blog.likes + 1, user: blog.user.id}
+      delete updatedBlog.id
+      const replacedBlog = await blogService.update(blog.id, updatedBlog)
+      refresh()
+      showNotification(`Blog ${blog.title} by ${blog.author} was liked :)`, setNotification)
+    } catch {
+      showNotification('Liking blog failed :(', setError)
+    }
+  }
+
+  const removeBlog = async (blog) => {
+    try {
+      if(window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)){
+        await blogService.remove(blog.id)
+        refresh()
+        showNotification(`Blog ${blog.title} removed successfully`, setNotification)
+      }
+    } catch {
+      showNotification('Removing blog failed', setError)
+    }
   }
 
   return (
@@ -109,9 +134,11 @@ const App = () => {
             <button onClick={handleLogout}>logout</button>
           </div>
           <br/>
-          {blogForm()}
+          <Togglable buttonLabel='new blog' ref={blogFormRef}>
+            <BlogForm createBlog={createBlog}/>
+          </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog}  updateBlog={updateBlog} removeBlog={removeBlog} user={user}/>
           )}
         </div>
       }
