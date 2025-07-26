@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Input = ({name, variable, setVariable}) => {
+const Input = ({name, variable, setVariable, placeHolder}) => {
     return (
       <div>
         {name}:
@@ -9,6 +9,7 @@ const Input = ({name, variable, setVariable}) => {
           value={variable}
           name={name}
           onChange={({target}) => setVariable(target.value)}
+          placeholder={placeHolder}
         />
       </div>
     )
@@ -36,9 +37,9 @@ const BlogForm = ({createBlog}) => {
     <div>
       <h2>create new</h2>
       <form onSubmit={addNewBlog}>
-        <Input name={'title'} variable={title} setVariable={setTitle}/>
-        <Input name={'author'} variable={author} setVariable={setAuthor}/>
-        <Input name={'url'} variable={url} setVariable={setUrl}/>
+        <Input name={'title'} variable={title} setVariable={setTitle} placeHolder={'write title here'}/>
+        <Input name={'author'} variable={author} setVariable={setAuthor} placeHolder={'write author here'}/>
+        <Input name={'url'} variable={url} setVariable={setUrl} placeHolder={'write url here'}/>
         <button type ="submit">create</button>
       </form>
     </div>
