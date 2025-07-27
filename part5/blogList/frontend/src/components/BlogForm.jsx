@@ -5,6 +5,7 @@ const Input = ({name, variable, setVariable, placeHolder}) => {
       <div>
         {name}:
         <input
+          data-testid={name}
           type="text"
           value={variable}
           name={name}
